@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ super() }}
+    Articles
+{% endblock %}
+
+{% block body %}
+    {% for article_id in articles %}
+        <ul>
+            <li><a href="{{url_for('articles.get_article', pk=article_id)}}">{{articles[article_id]}}</a></li>
+        </ul>
+    {% endfor %}
+{% endblock %}
