@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% block body %}
-    {% for article in articles %}
+    {% for article_id in articles %}
         <ul>
-            <li>{{article}}</li>
+            <li><a href="{{url_for('articles.get_article', pk=article_id)}}">{{articles[article_id]}}</a></li>
         </ul>
     {% endfor %}
 {% endblock %}
