@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from blog.user.views import user
 from blog.article.views import article
@@ -12,6 +14,9 @@ from blog.article.views import article
 
 def create_app() -> Flask:
     app = Flask(__name__)
+
+    app.config.from_pyfile('config.py')
+
     register_blueprints(app)
     return app
 
