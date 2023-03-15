@@ -1,4 +1,4 @@
-from blog.app import db
+from blog.database import db
 
 
 class User(db.Model):
