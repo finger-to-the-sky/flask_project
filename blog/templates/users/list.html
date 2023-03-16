@@ -6,9 +6,16 @@
 {% endblock %}
 
 {% block body %}
-    {% for user in users %}
-        <ul>
-            <li><a href="{{ url_for('user.get_user', pk=user.id) }}">{{ user.email }}</a></li>
-        </ul>
-    {% endfor %}
+    <div class="row">
+        <div class="col">
+            <h1>Users</h1>
+            {% for user in users %}
+                <ul>
+                    <li><a href="{{ url_for('user.profile', pk=user.id) }}">{{ user.email }}</a></li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+
+
 {% endblock %}
