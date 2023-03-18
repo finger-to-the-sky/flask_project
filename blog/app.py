@@ -14,8 +14,8 @@ def register_blueprints(app: Flask):
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '#w^_krs-1me#bly9)sn_7u3f&7&grjdhn^vd2kiu1!2ay7pc$x'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config.from_object('blog.config')
+
 db.init_app(app)
 register_blueprints(app)
 
