@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import check_password_hash
+
+from blog.forms.users import UserRegisterForm
 from blog.models import User
 from flask_login import logout_user, login_user, login_required, current_user
 
@@ -38,3 +40,12 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('.login'))
+
+
+@auth.route('/registration', methods=['GET', 'POST'])
+def registration():
+    if current_user.is_authenticated:
+        return redirect(url_for('user.profile', pk=current_user.id))
+
+    form = UserRegisterForm(request.form)
+    return render_template('auth/registration.html', form=form)
