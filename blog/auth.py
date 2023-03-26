@@ -11,15 +11,15 @@ auth = Blueprint('auth', __name__, static_folder='../static')
 
 @auth.route('/login', methods=['POST', 'GET'])
 def login():
-    if request.method == 'GET':
-        return render_template('auth/login.html')
-
     form = UserAuthForm(request.form)
+    password = request.form.get('password')
+    if request.method == 'GET':
+        return render_template('auth/login.html', form=form)
 
     if request.method == 'POST' and form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
 
-        if not user or not user.check_password(form.password.data):
+        if not user or not check_password_hash(user.password, password):
             flash('Check your login details')
             return redirect(url_for('.login'))
 

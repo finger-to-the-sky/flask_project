@@ -2,11 +2,11 @@ FROM python:3.8.10-buster
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
+COPY ../docker/requirements.txt requirements.txt
 
 RUN pip install --no-cache --user -r requirements.txt
 
-COPY . .
+COPY .. .
 
 EXPOSE 5000
 
