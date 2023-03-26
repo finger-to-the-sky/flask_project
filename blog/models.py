@@ -1,5 +1,8 @@
+from sqlalchemy.orm import relationship
+
 from blog.database import db
 from flask_login import UserMixin
+from sqlalchemy import ForeignKey
 
 
 class User(db.Model, UserMixin):
@@ -10,9 +13,18 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     password = db.Column(db.String(255))
+    author = relationship('Author', uselist=False, back_populates='user')
 
-    def __init__(self,email, first_name, last_name, password):
+    def __init__(self, email, first_name, last_name, password):
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
         self.password = password
+
+
+class Author(db.Model):
+    __tablename__ = 'authors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='author')
