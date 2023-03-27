@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from blog.users.views import user_blueprint
-# from blog.views import article_blueprint
+from blog.articles.views import article_blueprint
 from blog.authors.views import author_blueprint
 from blog.database import db, migrate, csrf
 from blog.auth import auth
@@ -10,7 +10,7 @@ from blog.models import User
 
 def register_blueprints(app: Flask):
     app.register_blueprint(user_blueprint)
-    # app.register_blueprint(article_blueprint)
+    app.register_blueprint(article_blueprint)
     app.register_blueprint(author_blueprint)
     app.register_blueprint(auth, url_prefix="/auth")
 
