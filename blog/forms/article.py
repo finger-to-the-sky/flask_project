@@ -1,9 +1,9 @@
 import wtforms
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, PasswordField, SubmitField
 
 
 class CreateArticleForm(FlaskForm):
-    title = StringField("Title", [validators.DataRequired()])
-    text = wtforms.TextAreaField("Text", [validators.DataRequired()])
-    submit = SubmitField("Create")
+    title = wtforms.StringField("Title", [wtforms.validators.DataRequired()])
+    text = wtforms.TextAreaField("Text", [wtforms.validators.DataRequired()])
+    tags = wtforms.SelectMultipleField('Tags', coerce=int)
+    submit = wtforms.SubmitField("Create")

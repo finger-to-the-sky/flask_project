@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
+from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
 from blog.database import db
-from blog.models import Articles, Author
+from blog.models import Articles, Author, Tag
 from blog.forms.article import CreateArticleForm
-
 
 article_blueprint = Blueprint('article', __name__, url_prefix='/articles', static_folder='../static')
 
@@ -17,7 +17,9 @@ def articles_list():
 
 @article_blueprint.route('/<int:article_id>')
 def get_article(article_id: int):
-    article = Articles.query.filter_by(id=article_id).one_or_none()
+    article: Articles = Articles.query.filter_by(
+        id=article_id).options(
+        joinedload(Articles.tags)).one_or_none()
 
     if article is None:
         raise NotFound
@@ -29,6 +31,8 @@ def get_article(article_id: int):
 @login_required
 def get_create_article():
     form = CreateArticleForm(request.form)
+    form.tags.choices = [(tag.id, tag.name) for tag in Tag.query.order_by('name')]
+
     return render_template('articles/create.html', form=form)
 
 
@@ -36,8 +40,11 @@ def get_create_article():
 @login_required
 def create_article():
     form = CreateArticleForm(request.form)
+    form.tags.choices = [(tag.id, tag.name) for tag in Tag.query.order_by('name')]
+
     if form.validate_on_submit():
         _article = Articles(title=form.title.data.strip(), text=form.text.data)
+
         if current_user.author:
             _article.author_id = current_user.author.id
         else:
@@ -45,6 +52,11 @@ def create_article():
             db.session.add(author)
             db.session.flush()
             _article.author_id = author.id
+
+        if form.tags.data:
+            selected_tags = Tag.query.filter(Tag.id.in_(form.tags.data))
+            for tag in selected_tags:
+                _article.tags.append(tag)
 
         db.session.add(_article)
         db.session.commit()
