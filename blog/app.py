@@ -6,6 +6,7 @@ from blog.authors.views import author_blueprint
 from blog.database import db, migrate, csrf
 from blog.auth import auth
 from blog.models import User
+import commands
 
 
 def register_blueprints(app: Flask):
@@ -28,6 +29,10 @@ register_blueprints(app)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
+
+
+def register_commands(app: Flask):
+    app.cli.add_command(commands.create_init_user)
 
 
 @login_manager.user_loader

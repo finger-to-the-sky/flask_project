@@ -1,14 +1,16 @@
 from datetime import datetime
-from sqlalchemy.orm import relationship
-from blog.database import db
+
 from flask_login import UserMixin
 from sqlalchemy import ForeignKey, Table
+from sqlalchemy.orm import relationship
+
+from blog.database import db
 
 article_tag_associations_table = Table(
     'article_tag_associations',
     db.metadata,
-    db.Column('article_id', db.Integer, ForeignKey('articles.db'), nullable=False),
-    db.Column('tag_id', db.Integer, ForeignKey('tag.db'), nullable=False)
+    db.Column('article_id', db.Integer, ForeignKey('articles.id'), nullable=False),
+    db.Column('tag_id', db.Integer, ForeignKey('tags.id'), nullable=False)
 )
 
 
