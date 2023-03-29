@@ -1,12 +1,36 @@
 from flask import Flask, redirect, url_for
-from flask_login import LoginManager
 from blog.users.views import user_blueprint
 from blog.articles.views import article_blueprint
 from blog.authors.views import author_blueprint
-from blog.database import db, migrate, csrf
+from blog.database import db, migrate, csrf, login_manager
 from blog.auth import auth
 from blog.models import User
-import commands
+from blog import commands
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('blog.config')
+    register_extensions(app)
+    register_blueprints(app)
+    register_commands(app)
+    return app
+
+
+def register_extensions(app):
+    db.init_app(app)
+    migrate.init_app(app, db, compare_type=True)
+    csrf.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return redirect(url_for('auth.login'))
 
 
 def register_blueprints(app: Flask):
@@ -16,31 +40,7 @@ def register_blueprints(app: Flask):
     app.register_blueprint(auth, url_prefix="/auth")
 
 
-app = Flask(__name__)
-app.config.from_object('blog.config')
-
-db.init_app(app)
-migrate.init_app(app, db)
-
-csrf.init_app(app)
-
-register_blueprints(app)
-
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-login_manager.init_app(app)
-
-
 def register_commands(app: Flask):
     app.cli.add_command(commands.create_init_user)
+    app.cli.add_command(commands.create_init_tags)
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    user = User.query.get(int(user_id))
-    return user
-
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    return redirect(url_for('auth.login'))
