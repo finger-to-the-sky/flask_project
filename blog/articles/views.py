@@ -64,3 +64,17 @@ def create_article():
         return redirect(url_for('article.get_article', article_id=_article.id))
 
     return render_template('articles/create.html', form=form)
+
+
+@article_blueprint.route('/tags', methods=['GET'])
+def tags_list():
+    tags = Tag.query.all()
+    return render_template('articles/tags/list.html', tags=tags)
+
+
+@article_blueprint.route('/filter_by_tag/<int:tag_id>', methods=['GET'])
+def get_article_by_tag(tag_id):
+    articles = Articles.query.filter(Articles.tags.any(id=tag_id)).all()
+    if not articles:
+        raise NotFound
+    return render_template('articles/tags/get_articles.html', articles=articles)
