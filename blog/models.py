@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from blog.database import db
+from blog.extensions import db
 
 article_tag_associations_table = Table(
     'article_tag_associations',
@@ -23,12 +23,16 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(255))
     password = db.Column(db.String(255))
     author = relationship('Author', uselist=False, back_populates='user')
+    is_staff = db.Column(db.Boolean, default=False)
 
     def __init__(self, email, first_name, last_name, password):
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
         self.password = password
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class Author(db.Model):
@@ -54,6 +58,9 @@ class Articles(db.Model):
     author = relationship('Author', back_populates='article')
     tags = relationship('Tag', secondary='article_tag_associations', back_populates='article')
 
+    def __str__(self):
+        return self.title
+
 
 class Tag(db.Model):
     __tablename__ = 'tags'
@@ -61,3 +68,6 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     article = relationship('Articles', secondary='article_tag_associations', back_populates='tags')
+
+    def __str__(self):
+        return self.name

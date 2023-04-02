@@ -1,6 +1,6 @@
 import click
 from werkzeug.security import generate_password_hash
-from blog.database import db
+from blog.extensions import db
 
 
 @click.command('create-init-user')

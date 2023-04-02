@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
-from blog.database import db
+from blog.extensions import db
 from blog.models import Articles, Author, Tag
 from blog.forms.article import CreateArticleForm
 
