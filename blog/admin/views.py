@@ -46,3 +46,11 @@ class ArticleAdminView(CustomAdminView):
 
 class UserAdminView(CustomAdminView):
     column_exclude_list = ('password',)
+    column_details_exclude_list = ('password',)
+    column_export_exclude_list = ('password',)
+    form_columns = ('first_name', 'last_name', 'is_staff')
+    can_delete = False
+    can_edit = True
+    can_create = False
+    can_view_details = False
+    column_editable_list = ('first_name', 'last_name', 'is_staff')

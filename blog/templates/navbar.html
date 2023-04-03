@@ -34,6 +34,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('auth.registration') }}">Registration</a>
                 </li>
+                {% if current_user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Administration</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
