@@ -1,11 +1,13 @@
+from combojsonapi.spec import ApiSpecPlugin
 from flask import Flask, redirect, url_for
 from blog.users.views import user_blueprint
 from blog.articles.views import article_blueprint
 from blog.authors.views import author_blueprint
-from blog.extensions import db, migrate, csrf, login_manager, admin
+from blog.extensions import db, migrate, csrf, login_manager, admin, api
 from blog.auth import auth
 from blog.models import User
 from blog import commands
+from blog.api.tag import TagList, TagDetail
 
 
 def create_app():
@@ -14,6 +16,7 @@ def create_app():
     register_extensions(app)
     register_blueprints(app)
     register_commands(app)
+    register_api_routes()
     return app
 
 
@@ -22,6 +25,15 @@ def register_extensions(app):
     migrate.init_app(app, db, compare_type=True)
     csrf.init_app(app)
     admin.init_app(app)
+    api.plugins = [
+        ApiSpecPlugin(
+            app=app,
+            tags={
+                'Tag': 'Tag API',
+            }
+        ),
+    ]
+    api.init_app(app)
 
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
@@ -33,6 +45,11 @@ def register_extensions(app):
     @login_manager.unauthorized_handler
     def unauthorized():
         return redirect(url_for('auth.login'))
+
+
+def register_api_routes():
+    api.route(TagList, 'tag_list', '/api/tags/', tag='Tag')
+    api.route(TagDetail, 'tag_detail', '/api/tags/<int:id>', tag='Tag')
 
 
 def register_blueprints(app: Flask):
