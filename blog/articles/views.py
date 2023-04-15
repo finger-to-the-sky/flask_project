@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
 from blog.extensions import db
 from blog.models import Articles, Author, Tag
-from blog.forms.article import CreateArticleForm
+from blog.forms.article import CreateArticleForm, EditArticleForm
 
 article_blueprint = Blueprint('article', __name__, url_prefix='/articles', static_folder='../static')
 
@@ -64,6 +64,36 @@ def create_article():
         return redirect(url_for('article.get_article', article_id=_article.id))
 
     return render_template('articles/create.html', form=form)
+
+
+@article_blueprint.route('/edit_article/<int:article_id>', methods=['POST', 'GET'])
+def edit_article(article_id: int):
+    form = EditArticleForm(request.form)
+    form.tags.choices = [(tag.id, tag.name) for tag in Tag.query.order_by('name')]
+
+    if form.validate_on_submit():
+        article = Articles.query.filter_by(id=article_id).first()
+        if current_user.author == article.author:
+            article.title = form.title.data.strip()
+            article.text = form.text.data
+
+        if form.tags.data:
+            selected_tags = Tag.query.filter(Tag.id.in_(form.tags.data))
+            for tag in selected_tags:
+                article.tags.append(tag)
+
+        db.session.commit()
+
+        return redirect(url_for('article.get_article', article_id=article.id))
+    return render_template('articles/edit.html', form=form, article_id=article_id)
+
+
+@article_blueprint.route('/delete_article/<int:article_id>')
+def delete_article(article_id: int):
+    article = Articles.query.filter_by(id=article_id).first()
+    db.session.delete(article)
+    db.session.commit()
+    return redirect(url_for('article.articles_list'))
 
 
 @article_blueprint.route('/tags', methods=['GET'])

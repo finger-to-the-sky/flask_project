@@ -7,3 +7,7 @@ class CreateArticleForm(FlaskForm):
     text = wtforms.TextAreaField("Text", [wtforms.validators.DataRequired()])
     tags = wtforms.SelectMultipleField('Tags', coerce=int)
     submit = wtforms.SubmitField("Create")
+
+
+class EditArticleForm(CreateArticleForm):
+    submit = wtforms.SubmitField('Edit')
